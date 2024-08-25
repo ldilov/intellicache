@@ -4,7 +4,11 @@
   "description": "An intelligent and innovative multilayered caching solution ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format:run": "npx @biomejs/biome format",
+    "format:fix": "npx @biomejs/biome format --write ./src",
+    "check:run": "npx @biomejs/biome check",
+    "check:fix": "npx @biomejs/biome check --write ./src"
   },
   "keywords": [
     "cache",
