@@ -12,18 +12,26 @@
 		"check:fix": "npx @biomejs/biome check --write ./src"
 	},
 	"exports": {
-      ".": "./index.js",
-      "./constants/*.js": "./src/constants/*.js",
-      "./multiTierCache.js": "./src/core/multiTierCache.js",
-      "./scopedCache.js": "./src/core/cache.js"
-    },
-	"keywords": ["cache", "layer", "smart", "intelligent"],
+		".": "./index.js",
+		"./constants/*.js": "./src/constants/*.js",
+		"./multiTierCache.js": "./src/core/multiTierCache.js",
+		"./scopedCache.js": "./src/core/cache.js"
+	},
+	"keywords": [
+		"cache",
+		"layer",
+		"smart",
+		"intelligent"
+	],
 	"author": "Lazar Dilov",
 	"license": "ISC",
 	"devDependencies": {
-		"@biomejs/biome": "1.8.3"
+		"@biomejs/biome": "1.8.3",
+		"chai": "^5.1.1",
+		"mocha": "^10.7.3"
 	},
 	"dependencies": {
-		"async-mutex": "^0.5.0"
+		"async-mutex": "^0.5.0",
+		"intellicache": "file:intellicache-1.0.0.tgz"
 	}
 }

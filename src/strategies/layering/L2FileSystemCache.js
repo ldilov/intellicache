@@ -4,6 +4,7 @@ import { gunzip, gzip } from 'node:zlib';
 import { promisify } from 'node:util';
 import { Mutex } from 'async-mutex';
 import { CacheEntry } from '../../core/cacheEntry.js';
+import {CACHE_LAYER_TYPES} from "../../constants/cacheLayerTypes.js";
 
 const asyncGzip = promisify(gzip);
 const asyncGunzip = promisify(gunzip);
@@ -11,9 +12,9 @@ const asyncGunzip = promisify(gunzip);
 export class L2FileSystemCache {
 	#mutex;
 
-	constructor(cacheDir = './cache') {
+	constructor(cacheDir = './cache', maxSize = 100) {
 		this.cacheDir = cacheDir;
-		this.code = 'L2';
+		this.code = CACHE_LAYER_TYPES.L2;
 		this.cacheKeys = new Set();
 		this.#mutex = new Mutex();
 		fs.mkdir(this.cacheDir, { recursive: true }).catch(console.error);

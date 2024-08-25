@@ -12,10 +12,11 @@ export class MultiTierCache extends CacheManager {
 		config = {
 			priorityList: [CACHE_LAYER_TYPES.L1, CACHE_LAYER_TYPES.L2],
 			cachePropagation: false,
+			maxSize: 100
 		},
 	) {
 		super(config);
-		const l1Cache = new L1MemoryCache();
+		const l1Cache = new L1MemoryCache(config.maxSize);
 		const l2Cache = new L2FileSystemCache();
 
 		this._cacheDict = {

@@ -1,12 +1,16 @@
 import { CacheEntry } from '../../core/cacheEntry.js';
 import { Mutex } from 'async-mutex';
+import {CACHE_LAYER_TYPES} from "../../constants/cacheLayerTypes.js";
+import { LRUEvictionStrategy } from "../eviction/lruEvictionStrategy.js";
 
 export class L1MemoryCache {
 	#mutex;
 
-	constructor() {
+	constructor(maxSize = 100) {
 		this.cache = new Map();
-		this.code = 'L1';
+		this.code = CACHE_LAYER_TYPES.L1;
+		this.maxSize = maxSize;
+		this.evictionStrategy = new LRUEvictionStrategy();
 		this.#mutex = new Mutex();
 	}
 
@@ -17,6 +21,8 @@ export class L1MemoryCache {
 			if (!entry || entry.isExpired()) {
 				this.cache.delete(key);
 				return null;
+			} else {
+				this.evictionStrategy.recordAccess(key);
 			}
 			return entry.value;
 		} finally {
@@ -27,6 +33,10 @@ export class L1MemoryCache {
 	async set(key, value, ttl = 60000) {
 		const release = await this.#mutex.acquire();
 		try {
+			if (this.cache.size >= this.maxSize) {
+				this.evictionStrategy.evict(this.cache);
+			}
+
 			const entry = new CacheEntry(key, value, ttl);
 			this.cache.set(key, entry);
 		} finally {
