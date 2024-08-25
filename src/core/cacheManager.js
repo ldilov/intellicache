@@ -1,37 +1,23 @@
 import { CacheEntry } from './cacheEntry.js';
+import { HookManager } from './hookManager.js';
+import { HOOK_TYPES } from '../constants/hookTypes.js';
 
 export class CacheManager {
     constructor(config = {}) {
         this.config = config;
-        this.hooks = {
-            preSet: [],
-            postGet: [],
-            eviction: [],
-        };
+        this.hookManager = new HookManager();
         this.cache = new Map();
     }
 
     addHook(hookType, fn) {
-        if (this.hooks[hookType]) {
-            this.hooks[hookType].push(fn);
-        } else {
-            throw new Error(`Unknown hook type: ${hookType}`);
-        }
-    }
-
-    runHooks(hookType, ...args) {
-        if (this.hooks[hookType]) {
-            for (const hook of this.hooks[hookType]) {
-                hook(...args);
-            }
-        }
+        this.hookManager.addHook(hookType, fn);
     }
 
     set(key, value, ttl = 60000) {
-        this.runHooks('preSet', key, value, ttl);
+        this.hookManager.runHooks(HOOK_TYPES.PRE_SET, key, value, ttl);
         const entry = new CacheEntry(key, value, ttl);
         this.cache.set(key, entry);
-        this.scheduleEviction(key, ttl);
+        this._scheduleEviction(key, ttl);
     }
 
     get(key) {
@@ -40,7 +26,7 @@ export class CacheManager {
             this.cache.delete(key);
             return null;
         }
-        this.runHooks('postGet', key, entry.value);
+        this.hookManager.runHooks(HOOK_TYPES.POST_GET, key, entry.value);
         return entry.value;
     }
 
@@ -48,9 +34,9 @@ export class CacheManager {
         this.cache.delete(key);
     }
 
-    scheduleEviction(key, ttl) {
+    _scheduleEviction(key, ttl) {
         setTimeout(() => {
-            this.runHooks('eviction', key);
+            this.hookManager.runHooks(HOOK_TYPES.EVICTION, key);
             this.cache.delete(key);
         }, ttl);
     }

@@ -17,7 +17,7 @@ export class Cache extends CacheManager {
         const scope = this.cache.get(scopeName);
         const entry = new CacheEntry(key, value, ttl);
         scope.set(key, entry);
-        this.scheduleEvictionInScope(scopeName, key, ttl);
+        this._scheduleEvictionInScope(scopeName, key, ttl);
     }
 
     getFromScope(scopeName, key) {
@@ -37,7 +37,7 @@ export class Cache extends CacheManager {
         this.cache.delete(scopeName);
     }
 
-    scheduleEvictionInScope(scopeName, key, ttl) {
+    _scheduleEvictionInScope(scopeName, key, ttl) {
         setTimeout(() => {
             const scope = this.cache.get(scopeName);
             if (scope) {
