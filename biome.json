@@ -5,7 +5,12 @@
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "single"
+			"quoteStyle": "single",
+			"semicolons": "always",
+			"trailingCommas": "all",
+			"bracketSpacing": true,
+			"arrowParentheses": "always",
+			"bracketSameLine": false
 		}
 	},
 	"organizeImports": {

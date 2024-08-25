@@ -10,15 +10,18 @@ const asyncGzip = promisify(gzip);
 const asyncGunzip = promisify(gunzip);
 
 export class L2FileSystemCache {
+	#mutex;
+
 	constructor(cacheDir = './cache') {
 		this.cacheDir = cacheDir;
+		this.code = 'L2';
 		this.cacheKeys = new Set();
-		this.mutex = new Mutex();
+		this.#mutex = new Mutex();
 		fs.mkdir(this.cacheDir, { recursive: true }).catch(console.error);
 	}
 
 	async get(key) {
-		const release = await this.mutex.acquire();
+		const release = await this.#mutex.acquire();
 		try {
 			if (!this.cacheKeys.has(key)) {
 				return null;
@@ -46,7 +49,7 @@ export class L2FileSystemCache {
 	}
 
 	async set(key, value, ttl = 60000) {
-		const release = await this.mutex.acquire();
+		const release = await this.#mutex.acquire();
 		try {
 			const entry = new CacheEntry(key, value, ttl);
 			const filePath = this._getFilePath(key);
@@ -63,7 +66,7 @@ export class L2FileSystemCache {
 	}
 
 	async delete(key) {
-		const release = await this.mutex.acquire();
+		const release = await this.#mutex.acquire();
 		try {
 			const filePath = this._getFilePath(key);
 			await fs.unlink(filePath);
