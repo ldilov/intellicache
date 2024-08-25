@@ -1,10 +1,9 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { CacheEntry } from '../../core/cacheEntry.js';
-import { Mutex } from 'async-mutex';
-import { gzip, gunzip } from 'node:zlib';
-
+import { gunzip, gzip } from 'node:zlib';
 import { promisify } from 'node:util';
+import { Mutex } from 'async-mutex';
+import { CacheEntry } from '../../core/cacheEntry.js';
 
 const asyncGzip = promisify(gzip);
 const asyncGunzip = promisify(gunzip);

@@ -19,7 +19,17 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"all": true,
+			"style": {
+				"all": false
+			},
+			"complexity": {
+				"all": false
+			},
+			"correctness": {
+				"recommended": true,
+				"noNodejsModules": "off"
+			}
 		}
 	}
 }

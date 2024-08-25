@@ -2,7 +2,7 @@ import { CacheManager } from './cacheManager.js';
 import { HOOK_TYPES } from '../constants/hookTypes.js';
 import { L1MemoryCache } from '../strategies/layering/l1MemoryCache.js';
 import { L2FileSystemCache } from '../strategies/layering/l2FileSystemCache.js';
-import { CACHE_LAYER_TYPES } from '../constants/cacheLayerTypes';
+import { CACHE_LAYER_TYPES } from '../constants/cacheLayerTypes.js';
 import { Mutex } from 'async-mutex';
 
 export class MultiTierCache extends CacheManager {
