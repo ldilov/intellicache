@@ -2,6 +2,7 @@ import { CacheEntry } from '../../core/cacheEntry.js';
 import { Mutex } from 'async-mutex';
 import {CACHE_LAYER_TYPES} from "../../constants/cacheLayerTypes.js";
 import { LRUEvictionStrategy } from "../eviction/lruEvictionStrategy.js";
+import {ObjectPool} from "../../utils/objectPool.js";
 
 export class L1MemoryCache {
 	#mutex;
@@ -11,23 +12,26 @@ export class L1MemoryCache {
 		this.code = CACHE_LAYER_TYPES.L1;
 		this.maxSize = maxSize;
 		this.evictionStrategy = new LRUEvictionStrategy();
+		this.cacheEntryPool = new ObjectPool(() => new CacheEntry('', '', 0), maxSize);
 		this.#mutex = new Mutex();
 	}
 
 	async get(key) {
-		const release = await this.#mutex.acquire();
-		try {
-			const entry = this.cache.get(key);
-			if (!entry || entry.isExpired()) {
+		const entry = this.cache.get(key);
+		if (!entry || entry.isExpired()) {
+			const release = await this.#mutex.acquire();
+			try {
 				this.cache.delete(key);
+				if (entry) {
+					this.cacheEntryPool.release(entry);
+				}
 				return null;
-			} else {
-				this.evictionStrategy.recordAccess(key);
+			} finally {
+				release();
 			}
-			return entry.value;
-		} finally {
-			release();
 		}
+		this.evictionStrategy.recordAccess(key);
+		return entry.value;
 	}
 
 	async set(key, value, ttl = 60000) {
@@ -37,7 +41,11 @@ export class L1MemoryCache {
 				this.evictionStrategy.evict(this.cache);
 			}
 
-			const entry = new CacheEntry(key, value, ttl);
+			let entry = this.cacheEntryPool.acquire();
+			entry.key = key;
+			entry.value = value;
+			entry.ttl = ttl;
+
 			this.cache.set(key, entry);
 		} finally {
 			release();
@@ -47,7 +55,11 @@ export class L1MemoryCache {
 	async delete(key) {
 		const release = await this.#mutex.acquire();
 		try {
+			const entry = this.cache.get(key);
 			this.cache.delete(key);
+			if (entry) {
+				this.cacheEntryPool.release(entry);
+			}
 		} finally {
 			release();
 		}
