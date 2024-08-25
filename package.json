@@ -6,10 +6,11 @@
 	"type": "module",
 	"scripts": {
 		"test": "mocha ./tests/*.test.js",
-		"format:run": "npx @biomejs/biome format",
+		"format:run": "npx @biomejs/biome format ./src",
 		"format:fix": "npx @biomejs/biome format --write ./src",
-		"check:run": "npx @biomejs/biome check",
-		"check:fix": "npx @biomejs/biome check --write ./src"
+		"check:run": "npx @biomejs/biome check ./src",
+		"check:fix": "npx @biomejs/biome check --write ./src",
+		"prepackage": "npm run check:run"
 	},
 	"exports": {
 		".": "./index.js",
@@ -26,7 +27,7 @@
 		"intelligent"
 	],
 	"author": "Lazar Dilov",
-	"license": "ISC",
+	"license": "Apache License 2.0",
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
 		"chai": "^5.1.1",
