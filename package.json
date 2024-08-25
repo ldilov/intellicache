@@ -1,0 +1,20 @@
+{
+  "name": "intellicache",
+  "version": "1.0.0",
+  "description": "An intelligent and innovative multilayered caching solution ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cache",
+    "layer",
+    "smart",
+    "intelligent"
+  ],
+  "author": "Lazar Dilov",
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3"
+  }
+}
